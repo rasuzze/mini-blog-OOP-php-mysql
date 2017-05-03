@@ -1,0 +1,101 @@
+﻿Užduotis:
+Parašyti blogą, kuriame būtų galima pilnai valdyti blogo publikacijas ir kiekvienas jų turėtų komentarus (komentarų valdymas nebūtinas).
+
+- Programa turi turėti bent šios klasės:
+-- Publication; metodai:
+--- setId(int $value) : void
+--- getId() : int
+--- setTitle(string $value) : void
+--- getTitle() : string
+--- setContent(string $value) : void
+--- getContent() : string
+--- getComments() : array<Comment>
+--- setComments(array<Comment> $comments)
+-- Comment; metodai:
+--- setId(int $value) : void
+--- getId() : int
+--- setPublication(Publication $item) : void
+--- getPublication() : Publication
+--- setAuthor(string $value) : void
+--- getAuthor() : string
+--- setContent(string $value) : void
+--- getContent() : string
+-- Repository; abstrakti; metodai:
+--- konstruktorius, priimantis PDO tipo objektą
+--- abstraktus getAll()
+--- abstraktus getById($id)
+--- abstraktus delete($item)
+--- abstraktus save($item)
+-- PublicationRepository; paveldi Repository
+-- CommentRepository; paveldi Repository; papildomi metodai:
+--- getByPublication(Publication $publication) : array of Comment
+- Duomenų bazės struktūra; lentelės:
+-- `publications`; laukai:
+--- `id` int AUTO_INCREMENT PRIMARY KEY not null
+--- `title` varchar(100) not null
+--- `content` text not null
+-- `comments`; laukai:
+--- `id` int AUTO_INCREMENT PRIMARY KEY not null
+--- `publication_id` int not null
+--- `author` varchar(100) not null
+--- `content` text not null
+
+Eiga:
+1. Susikurti duomenų bazės lenteles per phpmyadmin pagal aukščiau nurodytą struktūrą
+1.1. Prikuriame duomenų bazėj fake duomenų, kad turėtumėme su kuo dirbti
+2. Susikurti database.php failą, kuriame būtų kuriamas PDO objektas prisijungimui prie duomenų bazės
+3. Susikurti abstrakčią klasę Repository (Repository.class.php), kurios struktūra aprašyta aukščia
+4. Sukurti Publication klasę, kurios struktūra aprašyta aukščiau
+5. Sukurti PublicationRepository, kuri paveldi Repository klasę:
+5.1. getAll() metodas atlieka SELECT užklausą per PDO ir gražina Publication tipo objektų masyvą
+5.2. getById($id) metodas atlieka SELECT užklausą pagal paduotą id per PDO ir gražina Publication tipo objektą arba null (jei nerado)
+5.3. delete($item) metodą aprašome su tuščiu kūnu
+5.4. save($item) metodą aprašome su tuščiu kūnu
+6. index.php faile padarome visų publikacijų atvaizdavimą
+6.1. includiname database.php ir PublicationRepository.class.php failus
+6.2. susikuriame PublicationRepository objektą
+6.3. naudodami getAll() metodą pasiimame visas publikacijas
+6.4. išvedame visas po vieną į ekraną, title padarydami linku į publikacijos puslapį (publication.php?id=<publikacijos id>)
+7. susikuriame publication.php puslapį, kuriame rodysime informaciją apie publikaciją
+7.1. publication.php faile includinam database.php ir Publication.class.php failus
+7.2. susikuriame PublicationRepository objektą
+7.3. naudodami getById($id) metodą, gauname konkrečią publikaciją
+7.4. atvaizduojame publikaciją su galimybe grįžti atgal
+8. sukuriame galimybę pridėti naują publikaciją
+8.1. PublicationRepository klasėje realizuojame save($item) metodą
+8.1.1. Metodas priima Publication klasės metodą
+8.1.2. naudodamiesi Publication metodais get*, pasiimame mums reikalingas reikšmes (id, title, content)
+8.1.3. per pdo atliekame INSERT užklausą ir papildome Publication objektą su gautu id iš duombazės (setId metodas)
+8.2. sukuriame create-publication.php failą, kuriame atvaizduojame formą
+8.2.1. forma siųs duomenis POST metodu į store-publication.php failą
+8.2.2. forma turės du laukus - title (input) ir content (textarea)
+8.3. sukuriame store-publication.php failą, kuriame įrašysime duomenis į failą
+8.3.1. Includiname database.php failą ir PublicationRepository.class.php failą
+8.3.2. Sukuriame Publication tipo objektą su duomenimis iš formos
+8.3.2.1. Duomenis pasiimame iš $_POST
+8.3.2.2. Duomenis į objektą sumetame naudodamiesi set* metodais
+8.3.3. naudojam save($item) metodą, išsaugome Publication į duomenų bazę
+8.3.4. Redirectinam į index'ą
+
+
+
+
+
+
+
+
+
+
+
+
+Papildomai:
+. Padaryti, kad index.php faile būtų rodomos tik straipsnių santraupos (t.y. iki 160 simbolių)
+
+Užduotyje naudojamos žinios:
+- Klasės ir objektai
+- Paveldimumas
+- Enkapsuliacija
+- Abstrakčios klasės
+- Metodų overridingas
+- Dependency Injection
+- Darbas su duombaze
